@@ -7,10 +7,13 @@ use App\Models\Message;
 use Livewire\Component;
 use App\Events\SendMessage;
 use Livewire\Attributes\On;
+use Livewire\WithFileUploads;
 
 class Chat extends Component
 {
-    public $user, $sender_id, $receiver_id;
+    use WithFileUploads;
+
+    public $user, $sender_id, $receiver_id, $file;
     public $message = '';
     public $messages = [];
 
@@ -54,6 +57,42 @@ class Chat extends Component
     public function listenForMessage($event){
         $message = Message::whereId($event['message']['id'])->with('sender', 'receiver')->first();
         $this->appendChatMessage($message);
+    }
+
+    public function uploadFile(){
+        $this->validate([
+            'file' => 'required|file|mimes:jpeg,png,bmp,tiff|max:2048',
+        ]);
+        $file = $this->file;
+        $filename = $file->getClientOriginalName();
+        $file->storeAs('public/uploads', $filename);
+
+        $receiver = User::findOrFail($this->receiver_id);
+        $file = $receiver->files()->create([
+            'filename' => $filename,
+            'sender_id' => auth()->user()->id,
+            'recipient_id' => $this->receiver_id,
+        ]);
+
+        $chatMessage = Message::create([
+            'sender_id'   => $this->sender_id,
+            'receiver_id' => $this->receiver_id,
+            'message'     => $filename,
+            'file_id'     => $file->id,
+        ]);
+
+        broadcast(new SendMessage($chatMessage))->toOthers();
+        $this->appendChatMessage($chatMessage);
+
+        $this->message = '';
+    }
+
+    public function download($id){
+        $file = File::findOrFail($id);
+        if($file && auth()->user()->id === $file->recipient_id){
+            return Storage::download('public/uploads/' . $file->filename);
+        }
+        return redirect()->route('chat', $file->recipient_id)->with('error', 'unauthorised access');
     }
 
     public function appendChatMessage($message)

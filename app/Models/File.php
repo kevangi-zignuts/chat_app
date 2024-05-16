@@ -7,18 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Message extends Model
+class File extends Model
 {
     use HasFactory, SoftDeletes;
-    protected $fillable = ['message', 'file_id', 'sender_id', 'receiver_id'];
+    protected $fillable = ['filename', 'sender_id', 'recipient_id'];
 
-    public function sender()
+    public function users()
     {
-        return $this->belongsTo(User::class, 'sender_id');
-    }
-    public function receiver()
-    {
-        return $this->belongsTo(User::class, 'receiver_id');
+        return $this->belongsTo(User::class);
     }
 
     public static function boot()

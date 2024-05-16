@@ -1,6 +1,7 @@
 <div>
     <div>
         <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
         <script src="https://code.jquery.com/jquery-2.2.4.min.js" type="text/javascript"></script>
         <script>
             $(document).ready(function() {
@@ -508,11 +509,19 @@
                                         </ul>
                                         <form wire:submit="sendMessage()">
                                             <div class="form-group mt-3 mb-0 d-flex" style="width: 100%">
+                                                <i class="fa-solid fa-paperclip"></i>
                                                 <textarea class="form-control" wire:model="message" style="width: 90%; height:42px;" rows="3"
                                                     placeholder="Type your message here..."></textarea>
                                                 <button type="submit" class="pb-5" style="font-size: 30px"><i
                                                         class="fa fa-paper-plane-o"></i></button>
                                             </div>
+                                        </form>
+                                        <form wire:submit="uploadFile()" enctype="multipart/form-data">
+                                            <div>
+                                                <input wire:model="file" class="form-control form-control-lg"
+                                                    id="formFileLg" type="file" name="file">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Upload</button>
                                         </form>
                                     </div>
                                 </div>
@@ -529,5 +538,6 @@
             <!-- Content wrapper end -->
 
         </div>
+        <script></script>
     </div>
 </div>
